@@ -23,8 +23,8 @@ var scene = {
 
 	// Pbr parameters (todo)
 	albedo        : vec3.clone([1, 0, 0]),
-	roughness     : 0,
-	metalness     : 1,
+	roughness     : 0.5,
+	metalness     : 0,
 	ao            : 0,
 };
 
@@ -170,6 +170,17 @@ gl.uniformMatrix4fv(
 
 		gl.uniform3fv(programInfo.uniformLocations.objectColor, scene.objectColor);
 
+		if(programInfo.uniformLocations.albedo) {
+			gl.uniform3fv(programInfo.uniformLocations.albedo, scene.albedo);
+		}
+
+		if(programInfo.uniformLocations.metalness) {
+			gl.uniform1f(programInfo.uniformLocations.metalness, scene.metalness);
+		}
+
+		if(programInfo.uniformLocations.roughness) {
+			gl.uniform1f(programInfo.uniformLocations.roughness, scene.roughness);
+		}
 
 
 
@@ -395,7 +406,7 @@ function initBuffers() {
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
 	new Uint16Array(indices), gl.STATIC_DRAW);
 
-	buffets = {
+	buffers = {
 		position     : positionBuffer,
 		normal       : normalBuffer,
 		textureCoord : textureCoordBuffer,
@@ -582,7 +593,10 @@ function createMainShaderProgram(gl) {
 			viewPosition     : gl.getUniformLocation(shaderProgram, 'uViewPos'),
 			lightPosition    : gl.getUniformLocation(shaderProgram, 'uLightPos'),
 			lightColor       : gl.getUniformLocation(shaderProgram, 'uLightColor'),
-			objectColor      : gl.getUniformLocation(shaderProgram, 'uObjectColor')
+			objectColor      : gl.getUniformLocation(shaderProgram, 'uObjectColor'),
+			albedo 			 : gl.getUniformLocation(shaderProgram, 'uAlbedo'),
+			metalness		 : gl.getUniformLocation(shaderProgram, 'uMetalness'),
+			roughness     	 : gl.getUniformLocation(shaderProgram, 'uRoughness')
 		}
 	};
 }
@@ -667,7 +681,7 @@ function loadShader(gl, type, source) {
 /**
 * Use this to create a controlable vector 3 in UI
 */
-function addVec3Parameter(entity, field) {
+function addVec3Parameter(entity, field, step=0.1) {
 	var wrapper = document.createElement("div");
 	var firstLabel = document.createElement("span");
 	firstLabel.innerHTML = field;
@@ -678,8 +692,12 @@ function addVec3Parameter(entity, field) {
 		wrapper.appendChild(label);
 		var input = document.createElement("input");
 		input.type = "number";
+		input.step = step; // step
 		input.value = scene[field][i];
 		input._target = i;
+		input.addEventListener("input", function(event, value) {
+			scene[field][event.target._target] = event.target.valueAsNumber;
+		});
 		input.addEventListener("change", function(event, value) {
 			scene[field][event.target._target] = event.target.valueAsNumber;
 		});
