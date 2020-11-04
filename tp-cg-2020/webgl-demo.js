@@ -395,7 +395,7 @@ function initBuffers() {
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
 	new Uint16Array(indices), gl.STATIC_DRAW);
 
-	buffets = {
+	buffers = {
 		position     : positionBuffer,
 		normal       : normalBuffer,
 		textureCoord : textureCoordBuffer,
