@@ -170,17 +170,6 @@ gl.uniformMatrix4fv(
 
 		gl.uniform3fv(programInfo.uniformLocations.objectColor, scene.objectColor);
 
-		if(programInfo.uniformLocations.albedo) {
-			gl.uniform3fv(programInfo.uniformLocations.albedo, scene.albedo);
-		}
-
-		if(programInfo.uniformLocations.metalness) {
-			gl.uniform1f(programInfo.uniformLocations.metalness, scene.metalness);
-		}
-
-		if(programInfo.uniformLocations.roughness) {
-			gl.uniform1f(programInfo.uniformLocations.roughness, scene.roughness);
-		}
 
 
 
@@ -593,10 +582,7 @@ function createMainShaderProgram(gl) {
 			viewPosition     : gl.getUniformLocation(shaderProgram, 'uViewPos'),
 			lightPosition    : gl.getUniformLocation(shaderProgram, 'uLightPos'),
 			lightColor       : gl.getUniformLocation(shaderProgram, 'uLightColor'),
-			objectColor      : gl.getUniformLocation(shaderProgram, 'uObjectColor'),
-			albedo 			 : gl.getUniformLocation(shaderProgram, 'uAlbedo'),
-			metalness		 : gl.getUniformLocation(shaderProgram, 'uMetalness'),
-			roughness     	 : gl.getUniformLocation(shaderProgram, 'uRoughness')
+			objectColor      : gl.getUniformLocation(shaderProgram, 'uObjectColor')
 		}
 	};
 }
@@ -681,27 +667,25 @@ function loadShader(gl, type, source) {
 /**
 * Use this to create a controlable vector 3 in UI
 */
-function addVec3Parameter(entity, field, step=0.1) {
-	var wrapper = document.createElement("div");
-	var firstLabel = document.createElement("span");
+function addVec3Parameter(entity, field) {
+	let wrapper = document.createElement("div");
+	let firstLabel = document.createElement("span");
+	firstLabel.className = "firstLabel";
+	wrapper.className = "wrapper";
 	firstLabel.innerHTML = field;
 	wrapper.appendChild(firstLabel);
-	for (var i = 0; i < 3; i++) {
-		var label = document.createElement("span");
-		label.innerHTML = "[" + i + "]";
+	for (let i = 0; i < 3; i++) {
+		let label = document.createElement("span");
+		label.innerHTML = i;
+		label.className = "labelElement";
 		wrapper.appendChild(label);
-		var input = document.createElement("input");
+		let input = document.createElement("input");
 		input.type = "number";
-		input.step = step; // step
+		input.step = "0.05";
 		input.value = scene[field][i];
 		input._target = i;
+		input.className = "inputFloat";
 		input.addEventListener("input", function(event, value) {
-			scene[field][event.target._target] = event.target.valueAsNumber;
-		});
-		input.addEventListener("change", function(event, value) {
-			scene[field][event.target._target] = event.target.valueAsNumber;
-		});
-		input.addEventListener("valuechange", function(event, value) {
 			scene[field][event.target._target] = event.target.valueAsNumber;
 		});
 		wrapper.appendChild(input);
@@ -713,17 +697,18 @@ function addVec3Parameter(entity, field, step=0.1) {
 * Use this to create a controlable float in UI
 */
 function addFloatParameter(entity, field) {
-	var wrapper = document.createElement("div");
-	var firstLabel = document.createElement("span");
+	let wrapper = document.createElement("div");
+	let firstLabel = document.createElement("span");
+	firstLabel.className = "firstLabel";
+	wrapper.className = "wrapper";
 	firstLabel.innerHTML = field;
 	wrapper.appendChild(firstLabel);
-	var input = document.createElement("input");
+	let input = document.createElement("input");
 	input.type = "number";
+	input.step = "0.05";
 	input.value = scene[field];
-	input.addEventListener("change", function(event, value) {
-		scene[field] = event.target.valueAsNumber;
-	});
-	input.addEventListener("valuechange", function(event, value) {
+	input.className = "inputFloat";
+	input.addEventListener("input", function(event, value) {
 		scene[field] = event.target.valueAsNumber;
 	});
 	wrapper.appendChild(input);
@@ -736,6 +721,8 @@ function addFloatParameter(entity, field) {
 function addTextureParameter(entity, field) {
 	var wrapper = document.createElement("div");
 	var firstLabel = document.createElement("span");
+	firstLabel.className = "firstLabel";
+	wrapper.className = "wrapper";
 	firstLabel.innerHTML = field;
 	wrapper.appendChild(firstLabel);
 	var input = document.createElement("input");
@@ -762,14 +749,14 @@ function createUI() {
 
 	addVec3Parameter(parametersDiv, "objectColor");
 	var title = document.createElement("h2");
-	title.innerHTML = "PBR parameters (TO DO)";
+	title.innerHTML = "PBR parameters <span class=\"todoClass\">TO DO</span>";
 	parametersDiv.appendChild(title);
 	addVec3Parameter(parametersDiv, "albedo");
 	addFloatParameter(parametersDiv, "roughness");
 	addFloatParameter(parametersDiv, "metalness");
 	addFloatParameter(parametersDiv, "ao");
 	title = document.createElement("h2");
-	title.innerHTML = "PBR advanced parameters (TO DO)";
+	title.innerHTML = "PBR advanced parameters <span class=\"todoClass\">TO DO</span>";
 	parametersDiv.appendChild(title);
 	addTextureParameter(parametersDiv, "albedo_map");
 	addTextureParameter(parametersDiv, "normal_map");
